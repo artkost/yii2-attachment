@@ -1,0 +1,16 @@
+{
+    "name": "artkost/yii2-attachment",
+    "description": "Files attachment bundle for Yii2",
+    "require": {
+        "yiisoft/yii2-imagine": "*",
+        "rubaxa/fileapi": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nikolay Kostyurin",
+            "email": "nikolay@artkost.ru"
+        }
+    ],
+    "minimum-stability": "dev"
+}
