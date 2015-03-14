@@ -1,8 +1,8 @@
 <?php
 
-namespace app\modules\attachment\behaviors;
+namespace artkost\attachment\behaviors;
 
-use app\modules\attachment\models\AttachmentFile;
+use artkost\attachment\models\AttachmentFile;
 use Yii;
 use yii\base\Behavior;
 use yii\base\InvalidConfigException;
@@ -10,12 +10,11 @@ use yii\base\InvalidParamException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveQueryInterface;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /**
  * Class UploadBehavior
- * @package app\modules\attachment
+ * @package artkost\attachment
  * Uploading file behavior.
  *
  * @property ActiveRecord $owner

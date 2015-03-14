@@ -1,16 +1,28 @@
 {
     "name": "artkost/yii2-attachment",
-    "description": "Files attachment bundle for Yii2",
-    "require": {
-        "yiisoft/yii2-imagine": "*",
-        "rubaxa/fileapi": "*"
-    },
+    "description": "Yii 2 files attachment",
+    "keywords": ["yii2", "file", "upload", "module"],
+    "type": "yii2-extension",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/artkost/yii2-attachment/issues",
+        "source": "https://github.com/artkost/yii2-attachment"
+    },
     "authors": [
         {
             "name": "Nikolay Kostyurin",
             "email": "nikolay@artkost.ru"
         }
     ],
-    "minimum-stability": "dev"
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "artkost\\attachment\\": ""
+        }
+    },
+    "extra": {
+        "bootstrap": "artkost\\attachment\\Bootstrap"
+    }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\modules\attachment\commands;
+namespace artkost\attachment\commands;
 
-use app\modules\attachment\models\AttachmentFile;
-use app\modules\attachment\models\ImageFile;
+use artkost\attachment\models\AttachmentFile;
+use artkost\attachment\models\ImageFile;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\Console;
@@ -13,7 +13,6 @@ use yii\helpers\Console;
  */
 class ManagerController extends Controller
 {
-
     /**
      * Clear temporary files
      */

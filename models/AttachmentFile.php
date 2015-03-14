@@ -1,8 +1,8 @@
 <?php
 
-namespace app\modules\attachment\models;
+namespace artkost\attachment\models;
 
-use app\modules\attachment\Module;
+use artkost\attachment\Manager;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\InvalidCallException;
@@ -104,15 +104,15 @@ class AttachmentFile extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Module::t('model','ID'),
-            'user_id' => Module::t('model','User ID'),
-            'name' => Module::t('model','Name'),
-            'uri' => Module::t('model','Uri'),
-            'mime' => Module::t('model','Mime'),
-            'size' => Module::t('model','Size'),
-            'type' => Module::t('model','Type'),
-            'created_at' => Module::t('model','Created At'),
-            'updated_at' => Module::t('model','Updated At'),
+            'id' => Manager::t('model','ID'),
+            'user_id' => Manager::t('model','User ID'),
+            'name' => Manager::t('model','Name'),
+            'uri' => Manager::t('model','Uri'),
+            'mime' => Manager::t('model','Mime'),
+            'size' => Manager::t('model','Size'),
+            'type' => Manager::t('model','Type'),
+            'created_at' => Manager::t('model','Created At'),
+            'updated_at' => Manager::t('model','Updated At'),
         ];
     }
 
@@ -122,8 +122,8 @@ class AttachmentFile extends ActiveRecord
     public function statusLabels()
     {
         return [
-            self::STATUS_TEMPORARY => Module::t('model', 'Temporary'),
-            self::STATUS_PERMANENT => Module::t('model', 'Permanent')
+            self::STATUS_TEMPORARY => Manager::t('model', 'Temporary'),
+            self::STATUS_PERMANENT => Manager::t('model', 'Permanent')
         ];
     }
 
@@ -144,7 +144,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getDirPath()
     {
-        return Module::getInstance()->getStoragePath() . dirname($this->uri) . DIRECTORY_SEPARATOR;
+        return Yii::$app->attachment->getStoragePath() . dirname($this->uri) . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -152,7 +152,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getDirUrl()
     {
-        return Module::getInstance()->getStorageUrl() . dirname($this->uri) . DIRECTORY_SEPARATOR;
+        return Yii::$app->attachment->getStorageUrl() . dirname($this->uri) . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -160,7 +160,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getFilePath()
     {
-        return Module::getInstance()->getStoragePath() . $this->uri;
+        return Yii::$app->attachment->getStoragePath() . $this->uri;
     }
 
     /**
@@ -168,7 +168,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getFileUrl()
     {
-        return Module::getInstance()->getStorageUrl() . $this->uri;
+        return Yii::$app->attachment->getStorageUrl() . $this->uri;
     }
 
     /**

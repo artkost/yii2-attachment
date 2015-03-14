@@ -1,15 +1,14 @@
 <?php
 
-namespace app\modules\attachment;
+namespace artkost\attachment;
 
 use Yii;
+use yii\base\Component;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
-class Module extends \yii\base\Module
+class Manager extends Component
 {
-    public static $name = 'attachment';
-
     /**
      * Parameter passed when upload file
      */
@@ -27,11 +26,6 @@ class Module extends \yii\base\Module
      * @var string
      */
     public $tempPath = '@webroot/storage/temp';
-
-    /**
-     * @var array Publish path cache array
-     */
-    protected static $_cachePublishPath = [];
 
     /**
      * Translates a message to the specified language.
@@ -61,7 +55,7 @@ class Module extends \yii\base\Module
      */
     public static function t($category, $message, $params = [], $language = null)
     {
-        return Yii::t(self::$name . '/' . $category, $message, $params, $language);
+        return Yii::t('attachment/' . $category, $message, $params, $language);
     }
 
     /**
@@ -78,33 +72,6 @@ class Module extends \yii\base\Module
     public static function getUploadedFiles()
     {
         return UploadedFile::getInstancesByName(self::PARAM_NAME);
-    }
-
-    /**
-     * @param $file
-     * @return string
-     */
-    public function getUrlOfFile($file)
-    {
-        return $this->getStorageUrl() . $file;
-    }
-
-    /**
-     * @param $file
-     * @return string
-     */
-    public function getPathOfFile($file)
-    {
-        return $this->getStoragePath() . $file;
-    }
-
-    /**
-     * @param $file
-     * @return string
-     */
-    public function getTempOfFile($file)
-    {
-        return $this->getTempPath() . $file;
     }
 
     /**
@@ -129,20 +96,5 @@ class Module extends \yii\base\Module
     public function getTempPath()
     {
         return FileHelper::normalizePath(Yii::getAlias($this->tempPath)) . DIRECTORY_SEPARATOR;
-    }
-
-    /**
-     * Publish given path.
-     *
-     * @param string $path Path
-     *
-     * @return string Published url (/assets/images/image1.png)
-     */
-    public function publish($path)
-    {
-        if (!isset(static::$_cachePublishPath[$path])) {
-            static::$_cachePublishPath[$path] = Yii::$app->assetManager->publish($path)[1];
-        }
-        return static::$_cachePublishPath[$path];
     }
 } 

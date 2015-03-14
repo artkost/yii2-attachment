@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\attachment;
+namespace artkost\attachment;
 
 use yii\base\BootstrapInterface;
 
@@ -13,11 +13,10 @@ class Bootstrap implements BootstrapInterface
     {
         $app->i18n->translations['attachment/*'] = [
             'class' => 'yii\i18n\PhpMessageSource',
-            'basePath' => '@app/modules/attachment/messages',
+            'basePath' => '@artkost/attachment/messages',
             'forceTranslation' => true,
             'fileMap' => [
                 'attachment/model' => 'model.php',
-                'attachment/widget' => 'widget.php',
             ]
         ];
     }
