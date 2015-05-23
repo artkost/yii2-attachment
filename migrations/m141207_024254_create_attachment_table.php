@@ -1,5 +1,7 @@
 <?php
 
+use artkost\attachment\Manager;
+use yii\base\InvalidConfigException;
 use yii\db\Schema;
 use yii\db\Migration;
 
@@ -8,7 +10,21 @@ use yii\db\Migration;
  */
 class m141207_024254_create_attachment_table extends Migration
 {
-    public $attachmentTable = '{{%attachment_file}}';
+    public $attachmentTable;
+
+    public function init()
+    {
+        parent::init();
+
+        /** @var Manager $attachment */
+        $attachment = Yii::$app->attachment;
+
+        if (!$attachment instanceof Manager) {
+            throw new InvalidConfigException('Attachment Manager component not defined');
+        }
+
+        $this->attachmentTable = $attachment->attachmentFileTable;
+    }
 
     /**
      * @inheritdoc

@@ -2,6 +2,7 @@
 
 namespace artkost\attachment\behaviors;
 
+use artkost\attachment\Manager;
 use artkost\attachment\models\AttachmentFile;
 use Yii;
 use yii\base\Behavior;
@@ -13,31 +14,23 @@ use yii\db\ActiveRecord;
 use yii\helpers\Html;
 
 /**
- * Class UploadBehavior
+ * Class AttachBehavior
  * @package artkost\attachment
- * Uploading file behavior.
+ * Attachment file behavior.
  *
  * @property ActiveRecord $owner
  */
 class AttachBehavior extends Behavior
 {
-    const NAME = 'attachBehavior';
-
     /**
      * Are available 3 indexes:
      * - `path` Path where the file will be moved.
      * - `tempPath` Temporary path from where file will be moved.
      * - `url` Path URL where file will be saved.
      *
-     * @var array Attributes array
+     * @var array Models instance config
      */
-    public $attributes = [];
-
-    /**
-     * Instantiated attributes
-     * @var AttachmentFile[]
-     */
-    protected $attaches = [];
+    public $models = [];
 
     /**
      * @inheritdoc
@@ -46,13 +39,13 @@ class AttachBehavior extends Behavior
     {
         parent::attach($owner);
 
-        if (!is_array($this->attributes) || empty($this->attributes)) {
-            throw new InvalidParamException('Invalid or empty attributes array.');
+        if (!is_array($this->models) || empty($this->models)) {
+            throw new InvalidParamException('Invalid or empty models array.');
         } else {
-            foreach ($this->attributes as $name => $config) {
-                $this->attaches[$name] = Yii::createObject($config);
+            foreach ($this->models as $relationName => $config) {
+                Manager::getInstance()->addAttachmentModel($this->owner, $relationName, $config);
 
-                $this->checkRelationExistence($name);
+                $this->checkRelationExistence($relationName);
             }
         }
     }
@@ -70,87 +63,51 @@ class AttachBehavior extends Behavior
     }
 
     /**
-     * @return AttachmentFile[]
+     * @param $attribute
+     * @return null|array
      */
-    public function getAttaches()
+    public function getAttachmentConfig($attribute)
     {
-        return $this->attaches;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttachConfigs()
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Get attached instance by attribute name
-     * @param $name
-     * @return AttachmentFile|null
-     */
-    public function getAttach($name)
-    {
-        return isset($this->attaches[$name]) ? $this->attaches[$name] : null;
-    }
-
-    /**
-     * @param $name
-     * @return array
-     */
-    public function getAttachConfig($name)
-    {
-        return isset($this->attributes[$name]) ? $this->attributes[$name] : [];
+        return isset($this->models[$attribute]) ? $this->models[$attribute] : null;
     }
 
     /**
      * @param string $name
      * @return mixed|null
      */
-    protected function getAttributeValue($name)
+    protected function getRelationValues($name)
     {
         return Html::getAttributeValue($this->owner, $name);
     }
 
     /**
-     * @param $attribute
+     * @param int|array $values
      * @return bool|int
-     * @throws \Exception
      */
-    protected function deleteFiles($attribute)
+    protected function deleteFiles($values)
     {
-        $values = $this->getAttributeValue($attribute);
-
         return AttachmentFile::deleteAll(['id' => $values]);
     }
 
     /**
-     * @param string $attribute
      * @param int|array $values
      * @return bool
      */
-    protected function markFilesAsPermanent($attribute, $values)
+    protected function markFilesAsPermanent($values)
     {
-        $config = $this->attributes[$attribute];
-        /** @var AttachmentFile $class */
-        $class = $config['class'];
-
         return AttachmentFile::updateAll([
             'status_id' => AttachmentFile::STATUS_PERMANENT
-        ], ['id' => $values, 'type' => $class::type()]);
+        ], ['id' => $values]);
     }
 
     /**
-     * @param string $attribute
+     * @param int|array $values
      * @return bool
      */
-    protected function markFilesAsTemporary($attribute)
+    protected function markFilesAsTemporary($values)
     {
-        $values = $this->getAttributeValue($attribute);
-
         return AttachmentFile::updateAll([
-            'status_id' => AttachmentFile::STATUS_PERMANENT
+            'status_id' => AttachmentFile::STATUS_TEMPORARY
         ], ['id' => $values]);
     }
 
@@ -172,10 +129,36 @@ class AttachBehavior extends Behavior
                 throw new InvalidConfigException("Value of relation '$getter' not valid");
             }
 
-            $this->attributes[$name]['multiple'] = $value->multiple;
+            $this->models[$name]['multiple'] = $value->multiple;
         } else {
             throw new InvalidConfigException("Relation '$class::$getter' for attribute '$name' does not exists");
         }
+    }
+
+    /**
+     * Helper method for define attachment relations
+     * @param $class
+     * @param $link
+     * @param bool $status
+     * @return static
+     */
+    public function hasOneAttachment($class, $link, $status = false)
+    {
+        return $this->owner->hasOne($class, $link)
+            ->andWhere(['type' => $class::type(), 'status_id' => $class::STATUS_PERMANENT]);
+    }
+
+    /**
+     * Helper method for define attachment relations
+     * @param $class
+     * @param $link
+     * @param bool $status
+     * @return static
+     */
+    public function hasManyAttachments($class, $link, $status = false)
+    {
+        return $this->owner->hasMany($class, $link)
+            ->andWhere(['type' => $class::type(), 'status_id' => $class::STATUS_PERMANENT]);
     }
 
     /**
@@ -183,8 +166,8 @@ class AttachBehavior extends Behavior
      */
     public function beforeInsert()
     {
-        foreach ($this->attributes as $attribute => $config) {
-            $this->markFilesAsPermanent($attribute, $this->getAttributeValue($attribute));
+        foreach ($this->models as $relationName => $config) {
+            $this->markFilesAsPermanent($this->getRelationValues($relationName));
         }
     }
 
@@ -193,9 +176,8 @@ class AttachBehavior extends Behavior
      */
     public function beforeUpdate()
     {
-        foreach ($this->attributes as $attribute => $config) {
-            $this->markFilesAsTemporary($attribute);
-            $this->markFilesAsPermanent($attribute, $this->getAttributeValue($attribute));
+        foreach ($this->models as $relationName => $config) {
+            $this->markFilesAsPermanent($this->getRelationValues($relationName));
         }
     }
 
@@ -204,8 +186,8 @@ class AttachBehavior extends Behavior
      */
     public function beforeDelete()
     {
-        foreach ($this->attributes as $attribute => $config) {
-            $this->deleteFiles($attribute, $this->getAttributeValue($attribute));
+        foreach ($this->models as $relationName => $config) {
+            $this->deleteFiles($config);
         }
     }
 }

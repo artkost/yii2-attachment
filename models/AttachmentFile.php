@@ -72,11 +72,20 @@ class AttachmentFile extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%attachment_file}}';
+        return Manager::getInstance()->attachmentFileTable;
     }
 
     /**
-     * Type of attachment
+     * @inheritdoc
+     * @return AttachmentFileQuery
+     */
+    public static function find()
+    {
+        return Yii::createObject(AttachmentFileQuery::className(), [get_called_class()]);
+    }
+
+    /**
+     * Type of attachment, unique per model
      * @return string
      */
     public static function type()
@@ -144,7 +153,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getDirPath()
     {
-        return Yii::$app->attachment->getStoragePath() . dirname($this->uri) . DIRECTORY_SEPARATOR;
+        return Manager::getInstance()->getStoragePath() . dirname($this->uri) . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -152,7 +161,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getDirUrl()
     {
-        return Yii::$app->attachment->getStorageUrl() . dirname($this->uri) . DIRECTORY_SEPARATOR;
+        return Manager::getInstance()->getStorageUrl() . dirname($this->uri) . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -160,7 +169,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getFilePath()
     {
-        return Yii::$app->attachment->getStoragePath() . $this->uri;
+        return Manager::getInstance()->getStoragePath() . $this->uri;
     }
 
     /**
@@ -168,7 +177,7 @@ class AttachmentFile extends ActiveRecord
      */
     public function getFileUrl()
     {
-        return Yii::$app->attachment->getStorageUrl() . $this->uri;
+        return Manager::getInstance()->getStorageUrl() . $this->uri;
     }
 
     /**
@@ -274,9 +283,7 @@ class AttachmentFile extends ActiveRecord
                     $this->status_id = self::STATUS_TEMPORARY;
                 }
 
-                if (!FileHelper::createDirectory($this->getDirPath())) {
-                    throw new InvalidCallException("Directory @storage/{$this->path} doesn't exist or cannot be created.");
-                }
+                Manager::getInstance()->createDirectory($this->getDirPath());
 
                 if (!$this->file->saveAs($this->getFilePath())) {
                     throw new ErrorException("File @storage/{$this->uri} cannot be saved.");

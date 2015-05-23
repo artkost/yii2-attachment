@@ -4,6 +4,7 @@ namespace artkost\attachment;
 
 use Yii;
 use yii\base\Component;
+use yii\base\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
@@ -15,17 +16,53 @@ class Manager extends Component
     const PARAM_NAME = 'file';
 
     /**
+     * Path of storage in web
      * @var string
      */
     public $storageUrl = '@web/storage';
+
     /**
+     * Path of storage in filesystem
      * @var string
      */
     public $storagePath = '@webroot/storage';
+
     /**
+     * Temp folder for temporary files
      * @var string
      */
     public $tempPath = '@webroot/storage/temp';
+
+    /**
+     * @var string
+     */
+    public $attachmentFileTable = '{{%attachment_file}}';
+
+    /**
+     * Instantiated AttachmentFile attributes
+     */
+    protected $modelsInstances = [];
+
+    public function init()
+    {
+        parent::init();
+
+        $this->createDirectory($this->storagePath);
+        $this->createDirectory($this->tempPath);
+    }
+
+    /**
+     * Ensure or create a folder
+     * @param $path
+     * @throws InvalidConfigException
+     * @throws \yii\base\Exception
+     */
+    public function createDirectory($path)
+    {
+        if (!FileHelper::createDirectory($path)) {
+            throw new InvalidConfigException("Directory {$path} doesn't exist or cannot be created.");
+        }
+    }
 
     /**
      * Translates a message to the specified language.
@@ -59,6 +96,14 @@ class Manager extends Component
     }
 
     /**
+     * @return static
+     */
+    public static function getInstance()
+    {
+        return Yii::$app->attachment;
+    }
+
+    /**
      * @return UploadedFile
      */
     public static function getUploadedFile()
@@ -72,6 +117,29 @@ class Manager extends Component
     public static function getUploadedFiles()
     {
         return UploadedFile::getInstancesByName(self::PARAM_NAME);
+    }
+
+    public function addAttachmentModel($ownerClass, $attribute, $config)
+    {
+        $name = $ownerClass . $attribute;
+
+        return $this->modelsInstances[$name] = Yii::createObject($config);
+    }
+
+    public function getAttachmentModel($ownerClass, $attribute)
+    {
+        $name = $ownerClass . $attribute;
+
+        if (!isset($this->modelsInstances[$name])) {
+            //try to create model that attaches AttachBehavior
+            Yii::createObject(['class' => $ownerClass]);
+
+            if (!isset($this->modelsInstances[$name])) {
+                return null;
+            }
+        }
+
+        return $this->modelsInstances[$name];
     }
 
     /**
