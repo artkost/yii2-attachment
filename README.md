@@ -1,26 +1,41 @@
-# Yii2 Attachment files module
-This module handle all files in application
+# Yii2 Attachments Module
+This module provide ability to attach and upload files
 
-All uploaded files have status `TEMPORARY` by default.
-When model with attaches save yourself, all the files attached to the model change their status to permanent.
+All uploaded files by default have  `TEMPORARY` status.
+When model with attachments save yourself, all files attached to the model change their status to permanent.
+
 
 # Cli Commands
 
 `php yii attachment/manager/clear` clears all temporary files from system
-`php yii attachment/manager/refresh-styles` resaves all image files with styles (files with mime 'image/jpeg', 'image/png')
 
 # How to use
 
+Configure `Manager` component
+
+```php
+return [
+    'components' => [
+        'attachment' => [
+            'class' => 'artkost\attachment\Manager',
+            'storageUrl' => '@web/storage',
+            'storagePath' => '@webroot/storage',
+            'attachmentFileTable' => '{{%attachment_file}}'
+        ]
+    ]
+]
+```
+
 Create your own type of file
 ```php 
-
 namespace app\modules\user\models;
 
-use app\modules\attachment\models\ImageFile;
+use artkost\attachment\models\ImageFile;
 
 class UserAvatarFile extends ImageFile
 {
 
+    //subfolder of storgae folder
     public $path = 'user/profile';
 
     public static function type()
@@ -31,7 +46,8 @@ class UserAvatarFile extends ImageFile
 
 ```
 
-Create model that have `attachment_id` field, and attach 'AttachBehavior` to it (ATTENTION: model can have only one instance of behavior)
+Create model that have `attachment_id` field, and attach behavior to it
+> ATTENTION: model can have only one instance of behavior
 
 ```php
 /**
@@ -42,7 +58,7 @@ Create model that have `attachment_id` field, and attach 'AttachBehavior` to it 
  * @property integer $user_id User ID
  * @property string $name Name
  * @property string $surname Surname
- * @property int $avatar_id Avatar
+ * @property int $avatar_id Avatar //our attachment_id
  * @property boolean $sex
  *
  * @property User $user User
@@ -59,7 +75,7 @@ class UserProfile extends ActiveRecord
     public function behaviors()
     {
         return [
-            AttachBehavior::NAME => [
+            'attachBehavior' => [
                 'class' => AttachBehavior::className(),
                 'attributes' => [
                     'avatar' => [
@@ -73,8 +89,8 @@ class UserProfile extends ActiveRecord
 
     public function getAvatar()
     {
-        return $this->hasOne(UserAvatarFile::className(), ['id' => 'avatar_id'])
-            ->andWhere(['type' => UserAvatarFile::type(), 'status_id' => UserAvatarFile::STATUS_PERMANENT]);
+        // simply helper method with predefined conditions
+        return $this->hasOneAttachment(UserAvatarFile::className(), ['id' => 'avatar_id']);
     }
 }
 ```
@@ -85,7 +101,7 @@ Add action into controller
 ```php
 namespace app\modules\user\controllers;
 
-use app\modules\attachment\fileapi\actions\UploadAction as FileAPIUpload;
+use artkost\attachmentFileAPI\actions\UploadAction as FileAPIUpload;
 use app\modules\user\models\UserProfile;
 
 /**
@@ -100,8 +116,8 @@ class ProfileController extends Controller
             'fileapi-upload' => [
                 'class' => FileAPIUpload::className(),
                 'modelClass' => UserProfile::className(),
-                'attribute' => 'avatar',
-                'unique' => true
+                'attribute' => 'avatar'
+                //'accessCheck' => function($action) {  }
             ]
         ];
     }
@@ -112,8 +128,7 @@ class ProfileController extends Controller
 in action view file you can use widget for upload files
 
 ```php
-<?php
-use app\modules\attachment\fileapi\widgets\File as FileAPIWidget;
+use artkost\attachmentFileAPI\widgets\File as FileAPIWidget;
 ?>
 ...
 <?= $form->field($model, 'preview')->widget(
@@ -125,5 +140,4 @@ use app\modules\attachment\fileapi\widgets\File as FileAPIWidget;
         ]
     ]
 )->label(false) ?>
-
 ```
