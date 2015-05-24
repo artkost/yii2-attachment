@@ -122,8 +122,11 @@ class Manager extends Component
     public function addAttachmentModel($ownerClass, $attribute, $config)
     {
         $name = $ownerClass . $attribute;
+        $model = $this->modelsInstances[$name] = Yii::createObject($config);
 
-        return $this->modelsInstances[$name] = Yii::createObject($config);
+        $this->checkRelationExistence($model, $attribute);
+
+        return $model;
     }
 
     public function getAttachmentModel($ownerClass, $attribute)
@@ -164,5 +167,30 @@ class Manager extends Component
     public function getTempPath()
     {
         return FileHelper::normalizePath(Yii::getAlias($this->tempPath)) . DIRECTORY_SEPARATOR;
+    }
+
+
+    /**
+     * Check if relation with given name exists in model
+     * @param $name
+     * @throws InvalidConfigException
+     */
+    protected function checkRelationExistence($model, $name)
+    {
+        $getter = 'get' . ucfirst($name);
+        $class = get_class($model);
+
+        if (method_exists($model, $getter)) {
+            /** @var ActiveQuery $value */
+            $value = $model->$getter();
+
+            if (!($value instanceof ActiveQueryInterface)) {
+                throw new InvalidConfigException("Value of relation '$getter' not valid");
+            }
+
+            $this->models[$name]['multiple'] = $value->multiple;
+        } else {
+            throw new InvalidConfigException("Relation '$class::$getter' for attribute '$name' does not exists");
+        }
     }
 } 

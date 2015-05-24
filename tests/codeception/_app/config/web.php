@@ -25,10 +25,4 @@ $config = [
         'db' => require __DIR__ . '/db.php',
     ]];
 
-if (defined('YII_APP_BASE_PATH')) {
-    $config = Codeception\Configuration::mergeConfigs(
-        $config,
-        require YII_APP_BASE_PATH . '/tests/codeception/config/config.php'
-    );
-}
 return $config;
