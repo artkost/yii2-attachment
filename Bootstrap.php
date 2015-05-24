@@ -13,7 +13,7 @@ class Bootstrap implements BootstrapInterface
     {
         $app->i18n->translations['attachment/*'] = [
             'class' => 'yii\i18n\PhpMessageSource',
-            'basePath' => '@artkost/attachment/messages',
+            'basePath' => __DIR__,
             'forceTranslation' => true,
             'fileMap' => [
                 'attachment/model' => 'model.php',

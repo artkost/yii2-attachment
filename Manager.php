@@ -100,7 +100,7 @@ class Manager extends Component
      */
     public static function getInstance()
     {
-        return Yii::$app->attachment;
+        return Yii::$app->attachmentManager;
     }
 
     /**

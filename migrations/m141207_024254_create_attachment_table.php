@@ -17,7 +17,7 @@ class m141207_024254_create_attachment_table extends Migration
         parent::init();
 
         /** @var Manager $attachment */
-        $attachment = Yii::$app->attachment;
+        $attachment = Manager::getInstance();
 
         if (!$attachment instanceof Manager) {
             throw new InvalidConfigException('Attachment Manager component not defined');

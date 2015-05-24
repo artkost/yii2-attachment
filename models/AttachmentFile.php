@@ -36,6 +36,10 @@ use yii\web\UploadedFile;
 class AttachmentFile extends ActiveRecord
 {
     /**
+     * Type of attachment, unique per model
+     */
+    const TYPE = 'default';
+    /**
      * Temporary files are removed after period of time
      */
     const STATUS_TEMPORARY = 0;
@@ -82,15 +86,6 @@ class AttachmentFile extends ActiveRecord
     public static function find()
     {
         return Yii::createObject(AttachmentFileQuery::className(), [get_called_class()]);
-    }
-
-    /**
-     * Type of attachment, unique per model
-     * @return string
-     */
-    public static function type()
-    {
-        return 'default';
     }
 
     /**
@@ -277,7 +272,7 @@ class AttachmentFile extends ActiveRecord
         if (parent::beforeSave($insert)) {
 
             if ($insert) {
-                $this->type = static::type();
+                $this->type = static::TYPE;
 
                 if (!is_numeric($this->status_id)) {
                     $this->status_id = self::STATUS_TEMPORARY;

@@ -11,6 +11,7 @@ use yii\helpers\ArrayHelper;
  */
 class ImageFile extends AttachmentFile
 {
+    const TYPE = 'image';
     /**
      * @var array
      */
@@ -28,11 +29,6 @@ class ImageFile extends AttachmentFile
         'extensions' => 'jpg, png',
         'mimeTypes' => 'image/jpeg, image/png'
     ];
-
-    public static function type()
-    {
-        return 'image';
-    }
 
     /**
      * @inheritdoc

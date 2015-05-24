@@ -9,8 +9,9 @@ use yii\helpers\ArrayHelper;
  * Class VideoFile
  * @package artkost\attachment\models
  */
-class MediaFile extends AttachmentFile
+class VideoFile extends AttachmentFile
 {
+    const TYPE = 'video';
     /**
      * @var array
      */
@@ -20,11 +21,6 @@ class MediaFile extends AttachmentFile
      * @var array
      */
     public static $mimeTypes = ['video/webm', 'video/ogg', 'video/mp4'];
-
-    public static function type()
-    {
-        return 'video';
-    }
 
     /**
      * @inheritdoc
