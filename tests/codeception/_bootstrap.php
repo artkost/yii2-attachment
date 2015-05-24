@@ -9,7 +9,7 @@ $kernel = Kernel::getInstance();
 $kernel->init([
     'debug'        => true,
     'includePaths' => [__DIR__.'/../../', VENDOR_DIR],
-    'excludePaths' => [__DIR__],
+    'excludePaths' => [__DIR__, VENDOR_DIR . '/phpunit'],
     'cacheDir'     => '/tmp/yii2-user/aop',
 ]);
 $kernel->loadFile(VENDOR_DIR.'/yiisoft/yii2/Yii.php');
