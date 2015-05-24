@@ -86,7 +86,7 @@ class UserProfile extends ActiveRecord
     public function getAvatar()
     {
         // simply helper method with predefined conditions
-        return $this->hasOneAttachment(UserAvatarFile::className(), ['id' => 'avatar_id']);
+        return $this->hasOneAttachment('avatar', ['id' => 'avatar_id']);
     }
 }
 ```
