@@ -1,7 +1,7 @@
 # Yii2 Attachments
 [![Build Status](https://travis-ci.org/artkost/yii2-attachment.svg?branch=master)](https://travis-ci.org/artkost/yii2-attachment)
 
-This module provide ability to attach and upload files
+This component provide ability to attach and upload files
 
 All uploaded files by default have  `TEMPORARY` status.
 When model with attachments save yourself, all files attached to the model change their status to permanent.
@@ -18,7 +18,7 @@ Configure `Manager` component
 ```php
 return [
     'components' => [
-        'attachment' => [
+        'attachmentManager' => [
             'class' => 'artkost\attachment\Manager',
             'storageUrl' => '@web/storage',
             'storagePath' => '@webroot/storage',
@@ -36,16 +36,11 @@ use artkost\attachment\models\ImageFile;
 
 class UserAvatarFile extends ImageFile
 {
+    const TYPE = 'userProfile';
 
     //subfolder of storgae folder
     public $path = 'user/profile';
-
-    public static function type()
-    {
-        return 'user_profile';
-    }
 }
-
 ```
 
 Create model that have `attachment_id` field, and attach behavior to it
@@ -79,10 +74,9 @@ class UserProfile extends ActiveRecord
         return [
             'attachBehavior' => [
                 'class' => AttachBehavior::className(),
-                'attributes' => [
+                'models' => [
                     'avatar' => [
-                        'class' => UserAvatarFile::className(),
-                        'attribute' => 'avatar_id'
+                        'class' => UserAvatarFile::className()
                     ]
                 ]
             ]
