@@ -53,6 +53,11 @@ class AttachmentFileTest extends TestCase
             $model->name = null;
             $this->assertFalse($model->validate(['name']));
         });
+
+        $this->specify('uri is required', function() use($model) {
+            $model->uri = null;
+            $this->assertFalse($model->validate(['uri']));
+        });
     }
 
 }
