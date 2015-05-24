@@ -1,4 +1,5 @@
-# Yii2 Attachments Module
+# Yii2 Attachments
+[![Build Status](https://travis-ci.org/artkost/yii2-attachment.svg?branch=develop)](https://travis-ci.org/artkost/yii2-attachment)
 This module provide ability to attach and upload files
 
 All uploaded files by default have  `TEMPORARY` status.
