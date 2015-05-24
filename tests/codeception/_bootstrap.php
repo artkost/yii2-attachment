@@ -10,7 +10,7 @@ $kernel->init([
     'debug'        => true,
     'includePaths' => [__DIR__.'/../../', VENDOR_DIR],
     'excludePaths' => [__DIR__, VENDOR_DIR . '/phpunit'],
-    'cacheDir'     => '/tmp/yii2-user/aop',
+    'cacheDir'     => '/tmp/yii2-attachment/aop',
 ]);
 $kernel->loadFile(VENDOR_DIR.'/yiisoft/yii2/Yii.php');
 $_SERVER['SCRIPT_FILENAME'] = YII_TEST_ENTRY_FILE;
