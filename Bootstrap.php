@@ -3,6 +3,7 @@
 namespace artkost\attachment;
 
 use yii\base\BootstrapInterface;
+use yii\base\InvalidConfigException;
 
 class Bootstrap implements BootstrapInterface
 {
@@ -19,5 +20,9 @@ class Bootstrap implements BootstrapInterface
                 'attachment/model' => 'model.php',
             ]
         ];
+
+        if (!$app->has('attachmentManager')) {
+            throw new InvalidConfigException("'attachmentManager' component not defined");
+        }
     }
 } 
