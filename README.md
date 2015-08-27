@@ -1,11 +1,11 @@
 # Yii2 Attachments
 [![Build Status](https://travis-ci.org/artkost/yii2-attachment.svg?branch=master)](https://travis-ci.org/artkost/yii2-attachment)
 
-This component provide ability to attach and upload files
+This component provide ability to attach and upload
 
-All uploaded files by default have  `TEMPORARY` status.
+All uploaded files by default stored in database and have `TEMPORARY` status.
+
 When model with attachments save yourself, all files attached to the model change their status to permanent.
-
 
 # Cli Commands
 
