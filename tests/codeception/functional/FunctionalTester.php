@@ -4,9 +4,9 @@
 // You should not change it manually as it will be overwritten on next build
 // @codingStandardsIgnoreFile
 
-namespace artkost\attachment\tests;
+namespace artkost\yii2\attachment\tests;
 use Codeception\Module\Filesystem;
-use artkost\attachment\tests\Codeception\Module\FunctionalHelper;
+use artkost\yii2\attachment\tests\Codeception\Module\FunctionalHelper;
 
 /**
  * Inherited Methods

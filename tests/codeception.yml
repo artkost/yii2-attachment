@@ -1,4 +1,4 @@
-namespace: artkost\attachment\tests
+namespace: artkost\yii2\attachment\tests
 actor: Tester
 paths:
     tests: codeception

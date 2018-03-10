@@ -1,8 +1,8 @@
 <?php
-namespace artkost\attachment\tests;
+namespace artkost\yii2\attachment\tests;
 
-use artkost\attachment\Manager;
-use artkost\attachment\models\AttachmentFile;
+use artkost\yii2\attachment\Manager;
+use artkost\yii2\attachment\models\AttachmentFile;
 use Codeception\Specify;
 
 use yii\codeception\TestCase;
@@ -12,7 +12,7 @@ class AttachmentFileTest extends TestCase
 {
     use Specify;
     /**
-     * @var \artkost\attachment\tests\UnitTester
+     * @var \artkost\yii2\attachment\tests\UnitTester
      */
     protected $tester;
 

@@ -1,6 +1,6 @@
 <?php
-namespace artkost\attachment\tests;
-use artkost\attachment\tests\FunctionalTester;
+namespace artkost\yii2\attachment\tests;
+use artkost\yii2\attachment\tests\FunctionalTester;
 
 class UploadCest
 {

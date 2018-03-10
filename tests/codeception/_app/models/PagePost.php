@@ -1,7 +1,7 @@
 <?php
 
-use artkost\attachment\behaviors\AttachBehavior;
-use artkost\attachment\models\AttachmentFile;
+use artkost\yii2\attachment\behaviors\AttachBehavior;
+use artkost\yii2\attachment\models\AttachmentFile;
 use yii\db\ActiveRecord;
 
 class PagePost extends ActiveRecord

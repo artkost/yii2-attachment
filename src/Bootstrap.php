@@ -1,6 +1,6 @@
 <?php
 
-namespace artkost\attachment;
+namespace artkost\yii2\attachment;
 
 use yii\base\BootstrapInterface;
 use yii\base\InvalidConfigException;

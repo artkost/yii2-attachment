@@ -1,9 +1,9 @@
 <?php
 
-namespace artkost\attachment\commands;
+namespace artkost\yii2\attachment\commands;
 
-use artkost\attachment\models\AttachmentFile;
-use artkost\attachment\models\ImageFile;
+use artkost\yii2\attachment\models\AttachmentFile;
+use artkost\yii2\attachment\models\ImageFile;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\Console;

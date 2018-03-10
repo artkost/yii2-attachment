@@ -1,8 +1,8 @@
 <?php
 
-namespace artkost\attachment\models;
+namespace artkost\yii2\attachment\models;
 
-use artkost\attachment\Manager;
+use artkost\yii2\attachment\Manager;
 use Yii;
 use yii\base\ErrorException;
 use yii\base\InvalidCallException;
@@ -70,6 +70,11 @@ class AttachmentFile extends ActiveRecord
      * @var
      */
     public $unique;
+
+    public function __construct()
+    {
+
+    }
 
     /**
      * @inheritdoc

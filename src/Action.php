@@ -1,8 +1,8 @@
 <?php
 
-namespace artkost\attachment;
+namespace artkost\yii2\attachment;
 
-use artkost\attachment\models\AttachmentFile;
+use artkost\yii2\attachment\models\AttachmentFile;
 use Yii;
 use yii\base\InvalidConfigException;
 

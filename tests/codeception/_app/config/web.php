@@ -3,7 +3,7 @@ $config = [
     'id' => 'yii2-attachment-test',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
-        'artkost\attachment\Bootstrap',
+        'artkost\yii2\attachment\Bootstrap',
     ],
     'extensions' => require(VENDOR_DIR . '/yiisoft/extensions.php'),
     'aliases' => [

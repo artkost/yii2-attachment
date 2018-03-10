@@ -1,10 +1,9 @@
 <?php
 
-namespace artkost\attachment\behaviors;
+namespace artkost\yii2\attachment\behaviors;
 
-use artkost\attachment\Manager;
-use artkost\attachment\models\AttachmentFile;
-use Yii;
+use artkost\yii2\attachment\Manager;
+use artkost\yii2\attachment\models\AttachmentFile;
 use yii\base\Behavior;
 use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
@@ -29,6 +28,13 @@ class AttachBehavior extends Behavior
      * @var array Models instance config
      */
     public $models = [];
+    protected $manager;
+
+    public function __construct(Manager $manager, $config = [])
+    {
+        $this->manager = $manager;
+        parent::__construct($config);
+    }
 
     /**
      * @inheritdoc
@@ -41,7 +47,7 @@ class AttachBehavior extends Behavior
             throw new InvalidParamException('AttachBehavior::models attribute is required and must be an array.');
         } else {
             foreach ($this->models as $relationName => $config) {
-                Manager::getInstance()->addAttachmentModel($this->owner, $relationName, $config);
+                $this->manager->addAttachmentModel($this->owner, $relationName, $config);
             }
         }
     }

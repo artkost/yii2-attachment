@@ -1,12 +1,12 @@
 <?php
 
-namespace artkost\attachment\models;
+namespace artkost\yii2\attachment\models;
 
 use yii\db\ActiveQuery;
 
 /**
  * Class AttachmentFileQuery
- * @package artkost\attachment\models\query
+ * @package artkost\yii2\attachment\models\query
  */
 class AttachmentFileQuery extends ActiveQuery
 {

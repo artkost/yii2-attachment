@@ -1,13 +1,13 @@
 <?php
 
-namespace artkost\attachment\models;
+namespace artkost\yii2\attachment\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
  * Class ImageFile
- * @package artkost\attachment\models
+ * @package artkost\yii2\attachment\models
  */
 class ImageFile extends AttachmentFile
 {
