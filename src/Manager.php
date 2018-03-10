@@ -7,7 +7,6 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQueryInterface;
 use yii\db\ActiveRecord;
-use yii\db\ActiveRecordInterface;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
@@ -50,21 +49,9 @@ class Manager extends Component
     {
         parent::init();
 
-        $this->createDirectory($this->storagePath);
-        $this->createDirectory($this->tempPath);
-    }
-
-    /**
-     * Ensure or create a folder
-     * @param $path
-     * @throws InvalidConfigException
-     * @throws \yii\base\Exception
-     */
-    public function createDirectory($path)
-    {
-        if (!FileHelper::createDirectory($path)) {
-            throw new InvalidConfigException("Directory {$path} doesn't exist or cannot be created.");
-        }
+        $this
+            ->createDirectory($this->storagePath)
+            ->createDirectory($this->tempPath);
     }
 
     /**
@@ -163,6 +150,22 @@ class Manager extends Component
         }
 
         return $this->modelsInstances[$name];
+    }
+
+    /**
+     * Ensure or create a folder
+     * @param $path
+     * @throws InvalidConfigException
+     * @throws \yii\base\Exception
+     * @return self
+     */
+    public function createDirectory($path)
+    {
+        if (!FileHelper::createDirectory(Yii::getAlias($path))) {
+            throw new InvalidConfigException("Directory {$path} doesn't exist or cannot be created.");
+        }
+
+        return $this;
     }
 
     /**
