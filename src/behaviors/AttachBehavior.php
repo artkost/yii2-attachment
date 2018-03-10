@@ -1,17 +1,14 @@
 <?php
 
-namespace artkost\attachment\behaviors;
+namespace artkost\yii2\attachment\behaviors;
 
-use artkost\attachment\Manager;
-use artkost\attachment\models\AttachmentFile;
-use Yii;
+use artkost\yii2\attachment\Manager;
+use artkost\yii2\attachment\models\AttachmentFile;
 use yii\base\Behavior;
-use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
-use yii\db\ActiveQuery;
-use yii\db\ActiveQueryInterface;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
+use yii\web\IdentityInterface;
 
 /**
  * Class AttachBehavior
@@ -31,6 +28,13 @@ class AttachBehavior extends Behavior
      * @var array Models instance config
      */
     public $models = [];
+    protected $manager;
+
+    public function __construct(Manager $manager, $config = [])
+    {
+        $this->manager = $manager;
+        parent::__construct($config);
+    }
 
     /**
      * @inheritdoc
@@ -40,12 +44,10 @@ class AttachBehavior extends Behavior
         parent::attach($owner);
 
         if (!is_array($this->models) || empty($this->models)) {
-            throw new InvalidParamException('Invalid or empty models array.');
+            throw new InvalidParamException('AttachBehavior::models attribute is required and must be an array.');
         } else {
             foreach ($this->models as $relationName => $config) {
-                Manager::getInstance()->addAttachmentModel($this->owner, $relationName, $config);
-
-                $this->checkRelationExistence($relationName);
+                $this->manager->addAttachmentModel($this->owner, $relationName, $config);
             }
         }
     }
@@ -63,12 +65,32 @@ class AttachBehavior extends Behavior
     }
 
     /**
+     * Get attachment model config by attribute
      * @param $attribute
      * @return null|array
      */
     public function getAttachmentConfig($attribute)
     {
         return isset($this->models[$attribute]) ? $this->models[$attribute] : null;
+    }
+
+    /*
+     * set attachment model config by attribute for this owner
+     */
+    public function setAttachmentConfig($attribute, array $config)
+    {
+        if (isset($this->models[$attribute])) {
+            $this->models[$attribute] = $config;
+        }
+    }
+
+    /**
+     * @param $attribute
+     * @return AttachmentFile
+     */
+    public function getAttachmentModel($attribute)
+    {
+        return Manager::getInstance()->getAttachmentModel(get_class($this->owner), $attribute);
     }
 
     /**
@@ -112,53 +134,51 @@ class AttachBehavior extends Behavior
     }
 
     /**
-     * Check if relation with given name exists in model
-     * @param $name
-     * @throws InvalidConfigException
-     */
-    protected function checkRelationExistence($name)
-    {
-        $getter = 'get' . ucfirst($name);
-        $class = get_class($this->owner);
-
-        if (method_exists($this->owner, $getter)) {
-            /** @var ActiveQuery $value */
-            $value = $this->owner->$getter();
-
-            if (!($value instanceof ActiveQueryInterface)) {
-                throw new InvalidConfigException("Value of relation '$getter' not valid");
-            }
-
-            $this->models[$name]['multiple'] = $value->multiple;
-        } else {
-            throw new InvalidConfigException("Relation '$class::$getter' for attribute '$name' does not exists");
-        }
-    }
-
-    /**
      * Helper method for define attachment relations
-     * @param $class
-     * @param $link
-     * @param bool $status
+     * @param string $class
+     * @param array $link
+     * @param int $status
      * @return static
      */
-    public function hasOneAttachment($class, $link, $status = false)
+    public function hasOneAttachment($class, $link, $status = AttachmentFile::STATUS_PERMANENT)
     {
+        $class = isset($this->models[$class]) ? $this->models[$class]['class'] : $class;
+
         return $this->owner->hasOne($class, $link)
-            ->andWhere(['type' => $class::type(), 'status_id' => $class::STATUS_PERMANENT]);
+            ->andWhere(['type' => $class::TYPE, 'status_id' => $status]);
     }
 
     /**
      * Helper method for define attachment relations
-     * @param $class
-     * @param $link
-     * @param bool $status
+     * @param string $class full class
+     * @param array $link
+     * @param int $status
      * @return static
      */
-    public function hasManyAttachments($class, $link, $status = false)
+    public function hasManyAttachments($class, $link, $status = AttachmentFile::STATUS_PERMANENT)
     {
+        $class = isset($this->models[$class]) ? $this->models[$class]['class'] : $class;
+
         return $this->owner->hasMany($class, $link)
-            ->andWhere(['type' => $class::type(), 'status_id' => $class::STATUS_PERMANENT]);
+            ->andWhere(['type' => $class::TYPE, 'status_id' => $status]);
+    }
+
+    /**
+     * Attaches file to owner model as attribute and saves it
+     * @param $attribute
+     * @param IdentityInterface $user
+     * @return bool
+     */
+    public function attachFile($attribute, IdentityInterface $user)
+    {
+        $file = Manager::getUploadedFile();
+        $model = $this->getAttachmentModel($attribute);
+
+        if ($model && $file) {
+            $model->setFile($file)->setUser($user)->save();
+        }
+
+        return false;
     }
 
     /**

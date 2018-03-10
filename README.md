@@ -19,7 +19,7 @@ Configure `Manager` component
 return [
     'components' => [
         'attachmentManager' => [
-            'class' => 'artkost\attachment\Manager',
+            'class' => 'artkost\yii2\attachment\Manager',
             'storageUrl' => '@web/storage',
             'storagePath' => '@webroot/storage',
             'attachmentFileTable' => '{{%attachment_file}}'
@@ -32,7 +32,7 @@ Create your own type of file
 ```php 
 namespace app\modules\user\models;
 
-use artkost\attachment\models\ImageFile;
+use artkost\yii2\attachment\models\ImageFile;
 
 class UserAvatarFile extends ImageFile
 {

@@ -1,8 +1,9 @@
 <?php
 
-namespace artkost\attachment;
+namespace artkost\yii2\attachment;
 
 use yii\base\BootstrapInterface;
+use yii\base\InvalidConfigException;
 
 class Bootstrap implements BootstrapInterface
 {
@@ -13,11 +14,15 @@ class Bootstrap implements BootstrapInterface
     {
         $app->i18n->translations['attachment/*'] = [
             'class' => 'yii\i18n\PhpMessageSource',
-            'basePath' => __DIR__,
+            'basePath' => __DIR__ . '/messages',
             'forceTranslation' => true,
             'fileMap' => [
                 'attachment/model' => 'model.php',
             ]
         ];
+
+        if (!$app->has('attachmentManager')) {
+            throw new InvalidConfigException("'attachmentManager' component not defined");
+        }
     }
 } 

@@ -1,10 +1,12 @@
 <?php
 
-namespace artkost\attachment;
+namespace artkost\yii2\attachment;
 
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveQueryInterface;
+use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
@@ -47,21 +49,9 @@ class Manager extends Component
     {
         parent::init();
 
-        $this->createDirectory($this->storagePath);
-        $this->createDirectory($this->tempPath);
-    }
-
-    /**
-     * Ensure or create a folder
-     * @param $path
-     * @throws InvalidConfigException
-     * @throws \yii\base\Exception
-     */
-    public function createDirectory($path)
-    {
-        if (!FileHelper::createDirectory($path)) {
-            throw new InvalidConfigException("Directory {$path} doesn't exist or cannot be created.");
-        }
+        $this
+            ->createDirectory($this->storagePath)
+            ->createDirectory($this->tempPath);
     }
 
     /**
@@ -100,7 +90,7 @@ class Manager extends Component
      */
     public static function getInstance()
     {
-        return Yii::$app->attachmentManager;
+        return Yii::$app->get('attachmentManager');
     }
 
     /**
@@ -119,13 +109,33 @@ class Manager extends Component
         return UploadedFile::getInstancesByName(self::PARAM_NAME);
     }
 
-    public function addAttachmentModel($ownerClass, $attribute, $config)
+    /**
+     * @param $owner
+     * @param $attribute
+     * @param $config
+     * @return mixed
+     * @throws InvalidConfigException
+     */
+    public function addAttachmentModel($owner, $attribute, $config)
     {
+        $ownerClass = get_class($owner);
         $name = $ownerClass . $attribute;
 
-        return $this->modelsInstances[$name] = Yii::createObject($config);
+        if (!isset($this->modelsInstances[$name])) {
+            $this->modelsInstances[$name] = Yii::createObject($config);
+
+            $this->checkOwnerRelationExistence($owner, $attribute);
+        }
+
+        return $this->modelsInstances[$name];
     }
 
+    /**
+     * @param $ownerClass
+     * @param $attribute
+     * @return null
+     * @throws InvalidConfigException
+     */
     public function getAttachmentModel($ownerClass, $attribute)
     {
         $name = $ownerClass . $attribute;
@@ -140,6 +150,22 @@ class Manager extends Component
         }
 
         return $this->modelsInstances[$name];
+    }
+
+    /**
+     * Ensure or create a folder
+     * @param $path
+     * @throws InvalidConfigException
+     * @throws \yii\base\Exception
+     * @return self
+     */
+    public function createDirectory($path)
+    {
+        if (!FileHelper::createDirectory(Yii::getAlias($path))) {
+            throw new InvalidConfigException("Directory {$path} doesn't exist or cannot be created.");
+        }
+
+        return $this;
     }
 
     /**
@@ -164,5 +190,34 @@ class Manager extends Component
     public function getTempPath()
     {
         return FileHelper::normalizePath(Yii::getAlias($this->tempPath)) . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * Check if relation with given name exists in owner model
+     * @param ActiveRecord $owner
+     * @param $attribute
+     * @throws InvalidConfigException
+     */
+    protected function checkOwnerRelationExistence($owner, $attribute)
+    {
+        $getter = 'get' . ucfirst($attribute);
+        $class = get_class($owner);
+
+        if (method_exists($owner, $getter)) {
+            $owner->attachBehaviors($owner->behaviors());
+            /** @var ActiveQueryInterface $value */
+            $value = $owner->$getter();
+
+            if (!($value instanceof ActiveQueryInterface)) {
+                throw new InvalidConfigException("Value of relation '$getter' not valid");
+            }
+
+            $config = $owner->getAttachmentConfig($attribute);
+            $config['multiple'] = $value->multiple;
+
+            $owner->setAttachmentConfig($attribute, $config);
+        } else {
+            throw new InvalidConfigException("Relation '$class::$getter' for attribute '$attribute' does not exists");
+        }
     }
 } 

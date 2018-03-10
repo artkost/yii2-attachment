@@ -1,6 +1,6 @@
 <?php
 
-use artkost\attachment\Manager;
+use artkost\yii2\attachment\Manager;
 use yii\base\InvalidConfigException;
 use yii\db\Schema;
 use yii\db\Migration;

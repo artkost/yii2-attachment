@@ -26,10 +26,10 @@
     },
     "autoload": {
         "psr-4": {
-            "artkost\\attachment\\": ""
+            "artkost\\yii2\\attachment\\": "src"
         }
     },
     "extra": {
-        "bootstrap": "artkost\\attachment\\Bootstrap"
+        "bootstrap": "artkost\\yii2\\attachment\\Bootstrap"
     }
 }

@@ -5,5 +5,5 @@ use yii\test\ActiveFixture;
 
 class AttachmentFileFixture extends ActiveFixture
 {
-    public $modelClass = 'artkost\attachment\models\AttachmentFile';
+    public $modelClass = 'artkost\yii2\attachment\models\AttachmentFile';
 }
